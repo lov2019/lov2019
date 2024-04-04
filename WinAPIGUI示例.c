@@ -31,20 +31,21 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
         "WindowClass",
         "Caption",
         WS_VISIBLE|WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT,
-		CW_USEDEFAULT,
-		640,
-		480,
-		NULL,
+	    CW_USEDEFAULT,
+	    CW_USEDEFAULT,
+	    640,
+	    480,
+	    NULL,
         NULL,
         hInstance,
-        NULL);
+        NULL
+	);
 	if(!hwnd){
 		MessageBox(NULL,"Window Creation Failed!","Error!",MB_ICONEXCLAMATION|MB_OK);
 		return 0;
 	}
     while(GetMessage(&Msg,NULL,0,0)>0){
-		TranslateMessage(&Msg);
+	    TranslateMessage(&Msg);
         DispatchMessage(&Msg);
 	}
 	return Msg.wParam;
