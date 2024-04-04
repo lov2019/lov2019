@@ -1,3 +1,4 @@
+/*港南二中2322班懂哥编写*/
 #include <windows.h>
 LRESULT CALLBACK WndProc(HWND hwnd,UINT Message,WPARAM wParam,LPARAM lParam){
 	switch(Message){
