@@ -1,6 +1,7 @@
-广西省贵港市港南二中七年级2322班懂哥
+<img src="https://github.com/lov2019/lov2019/blob/main/IMG_20240406_154703.jpg?raw=true">
 
-精通C++ Python
+
+广西省贵港市港南二中七年级2322班懂哥
 
 
 <!---
