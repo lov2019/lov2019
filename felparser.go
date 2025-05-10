@@ -26,5 +26,8 @@ func ParseFEML(src string) map[string]string {
         if ei == -1 {
             return nil
         }
-        rc[ln[0
-        
+        ln += " "
+        rc[ln[0 : ei]] = ln [ei + 1 : len(ln) - 1]
+    }
+    return rc
+}
