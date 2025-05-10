@@ -16,4 +16,13 @@ func MapToFEML(src map[string]string) string {
 func ParseFEML(src string) map[string]string {
     rc := make(map[string]string)
     ei := 0
-    
+    for _, ln := range strings.Split(src, "\n") {
+        if ln == "" {
+            continue
+        }
+        ei = strings.Index(ln, "=")
+        if ei == -1 {
+            return nil
+        }
+        rc[ln[0
+        
