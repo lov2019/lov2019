@@ -3,9 +3,12 @@
 #include <string.h>
 int lfstr_indexOf(char *src, char *need) {
     if (*need == '\0') {
-        return -1:
+        return -1;
     }
-    char *res = strstr(src, need);
+    char *res = strstr(src, need));
     return res ? res - src : NULL;
+}
+bool lfstr_equals(char *a, char *b) {
+    return !strcmp(a, b);
 }
 #endif
