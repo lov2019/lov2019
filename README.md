@@ -3,7 +3,7 @@
 
 邮箱 <strong>Lov-2019@outlook.com</strong>（稳定）
 
-Skype <strong>live:.cid.17c18847629d94ab</strong> (因为此网站停服，所以已弃用）
+Skype <del><strong>live:.cid.17c18847629d94ab</strong></del> (因为此网站停服，所以已弃用）
 
 QQ <strong>918577156</strong>（当前稳定，但不提供长期支持）
 <!---
