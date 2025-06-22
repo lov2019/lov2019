@@ -1,7 +1,10 @@
 #ifndef LFSTR_H
+
 #define LFSTR_H
+
 #include <string.h>
 #include <stdlib.h>
+
 struct LFSTR {
     char *data;
     int size;
@@ -42,11 +45,15 @@ int calcRealIndex(int index, int length) {
 }
 
 bool lfstrAppend(LFSTR *rc, char *str) {
-    if (rc->size < strlen(rc->data) + strlen(str) + 1) {
+    int length = strlen(rc->data) + strlen(str) + 1
+    if (rc->size < length) {
         LFSTR raw;
-        if(!lfstrHinit(&raw)) {
+        if(!lfstrHinit(&raw, length)) {
             return false;
         }
     }
+    strcat(rc->data, str);
+    return true;
 }
+
 #endif
