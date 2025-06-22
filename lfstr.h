@@ -38,6 +38,6 @@ int calcRealIndex(int index, int length) {
         return index < length ? index : length - 1;
     }
     int rc = length + index;
-    return rc >= 0 ?
+    return rc >= 0 ? rc : 0;
 }
 #endif
