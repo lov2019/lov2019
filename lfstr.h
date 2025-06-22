@@ -40,4 +40,13 @@ int calcRealIndex(int index, int length) {
     int rc = length + index;
     return rc >= 0 ? rc : 0;
 }
+
+bool lfstrAppend(LFSTR *rc, char *str) {
+    if (rc->size < strlen(rc->data) + strlen(str) + 1) {
+        LFSTR raw;
+        if(!lfstrHinit(&raw)) {
+            return false;
+        }
+    }
+}
 #endif
