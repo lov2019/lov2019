@@ -3,55 +3,93 @@
 
 #include "stm32f103x8.h"
 
-void SystemClock_Config(void) {
-    RCC->CR |= (1 << 16);
-    while (!(RCC->CR & (1 << 17)));
+// 引脚定义
+// GPIO_PIN_0 控制蠕动
+// GPIO_PIN_1 连接干湿传感器
+// GPIO_PIN_2 连接复位按钮
 
-    RCC->CFGR &= ~(3 << 0);
-    RCC->CFGR |= (2 << 0);
+#define PULSE_PIN      GPIO_PIN_0
+#define PULSE_PORT     GPIOA
 
-    RCC->CR |= (1 << 16);
-    while (!(RCC->CR & (1 << 17)));
+#define SENSOR_PIN     GPIO_PIN_1
+#define SENSOR_PORT    GPIOA
 
-    RCC->CFGR |= (0x03 << 16);
-    RCC->CR |= (1 << 16);
-    while (!(RCC->CR & (1 << 17)));
+#define TRIGGER_PIN    GPIO_PIN_2
+#define TRIGGER_PORT   GPIOA
 
-    RCC->CFGR |= (2 << 0);
-    while ((RCC->CFGR & (3 << 0)) != (2 << 0));
-}
+// 函数声明
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
 
-void GPIO_Init(void) {
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-
-    GPIO_InitTypeDef GPIO_InitStruct;
-    GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0;
-    GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOA, &GPIO_InitStruct);
-}
-
-void TIM2_Init(void) {
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
-
-    TIM_TimeBaseInitTypeDef TIM_TimeBaseStruct;
-    TIM_TimeBaseStruct.TIM_Prescaler = 7199;
-    TIM_TimeBaseStruct.TIM_Period = 9999;
-    TIM_TimeBaseStruct.TIM_CounterMode = TIM_CounterMode_Up;
-    TIM_TimeBaseStruct.TIM_ClockDivision = TIM_CKD_DIV1;
-
-    TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStruct);
-
-    TIM_Cmd(TIM2, ENABLE);
-}
-
-int main(void) {
+int main(void)
+{
+    HAL_Init();
     SystemClock_Config();
-    GPIO_Init();
-    TIM2_Init();
+    MX_GPIO_Init();
 
-    while (1) {
-        for (volatile int i = 0; i < 1000000; i++);
-        GPIO_WriteBit(GPIOA, GPIO_Pin_0, (BitAction)(!GPIO_ReadOutputDataBit(GPIOA, GPIO_Pin_0)));
+    uint8_t stop_flag = 0;        // 停止标志位
+    uint8_t trigger_state = 0;    // 上次触发状态
+    uint8_t current_trigger = 0;  // 当前触发状态
+
+    while (1)
+    {
+        // 检测是否接收到外部脉冲（上升沿）
+        current_trigger = HAL_GPIO_ReadPin(TRIGGER_PORT, TRIGGER_PIN);
+
+        if (current_trigger == GPIO_PIN_SET && trigger_state == GPIO_PIN_RESET)
+        {
+            // 检测到上升沿，重置停止标志，继续循环
+            stop_flag = 0;
+            HAL_Delay(10);  // 防抖延时
+        }
+        trigger_state = current_trigger;
+
+        // 如果已停止，则跳过脉冲输出
+        if (stop_flag)
+        {
+            continue;
+        }
+
+        // 输出一个高电平脉冲（持续时间可调，如 100ms），模拟手按摩jb
+        HAL_GPIO_WritePin(PULSE_PORT, PULSE_PIN, GPIO_PIN_SET);
+        HAL_Delay(100);  // 脉冲宽度
+        HAL_GPIO_WritePin(PULSE_PORT, PULSE_PIN, GPIO_PIN_RESET);
+
+        // 延时1秒后再次输出
+        HAL_Delay(900);  // 总计1秒
+
+        // 检查干湿传感器是否检测到液体（检测到j液后停止，低电平有效）
+        if (HAL_GPIO_ReadPin(SENSOR_PORT, SENSOR_PIN) == GPIO_PIN_RESET)
+        {
+            stop_flag = 1;  // 设置停止标志
+        }
     }
+}
+
+// 引脚初始化函数
+static void MX_GPIO_Init(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    /* GPIO Ports Clock Enable */
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+
+    // 设置输出脉冲引脚为推挽输出
+    GPIO_InitStruct.Pin = PULSE_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(PULSE_PORT, &GPIO_InitStruct);
+
+    // 设置干湿传感器引脚为上拉输入
+    GPIO_InitStruct.Pin = SENSOR_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    HAL_GPIO_Init(SENSOR_PORT, &GPIO_InitStruct);
+
+    // 设置外部触发引脚为上拉输入
+    GPIO_InitStruct.Pin = TRIGGER_PIN;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    HAL_GPIO_Init(TRIGGER_PORT, &GPIO_InitStruct);
 }
