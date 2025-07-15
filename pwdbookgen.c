@@ -1,7 +1,10 @@
+// 密码本生成程序-by 港南二2322点懂哥
+
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
+
 int bothare(char *s, char a, int c) {
 	for (int i=0; i < c; i++){
 		if (*(s + i) != a) {
@@ -10,6 +13,7 @@ int bothare(char *s, char a, int c) {
 	}
 	return 1;
 }
+
 void check(char *s, int c) {
 	for (int i = 0; i < c - 1; i++) {
 		if (*(s + i) > 126) {
@@ -18,6 +22,7 @@ void check(char *s, int c) {
 		}
 	}
 }
+
 int main() {
 	FILE *book = fopen("password.txt", "a");
 	if (!book) {
@@ -26,15 +31,8 @@ int main() {
 	}
 	char *password;
 	char rp[32];
-	//double index = 0;
-	//for (int i = 0; i < 20; i++) {
-	//	index += pow(127 - 33, i);
-	//}
 	double completed = 0;
-	//printf("有%f种可能\n", index);
 	for(double i = 6; i < 21; i++) {
-		
-		//printf("length=%d\n", i);
 		password = (char *)malloc(sizeof(char) * i);
 		for(int py=0; py < i - 1; py++){
 			*(password + py) = 33;
@@ -51,7 +49,7 @@ int main() {
 			check(password, strlen(password));
 			fprintf(book, "%s\n", rp);
 			printf("\r[ %0f ] %s", completed, rp);
-			//pprintf("%s\n")
+			
 		}
 		free(password);
 	}
