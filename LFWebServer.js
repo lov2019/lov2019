@@ -25,7 +25,15 @@ function parseUrlParams(url) {
     return params;
 }
 module.exports.parseUrlParams = parseUrlParams
-
+http = require("http");
+class LFWebServer {
+    constructor() {
+        this.server = http.createServer((req, res) => {
+            const url = req.url;
+            const method = request.method;
+        }
+    }
+}
 
 
 
